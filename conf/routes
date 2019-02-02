@@ -1,0 +1,18 @@
+
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /getParticipants                 controllers.ParticipantsController.getParticipants(team: String)
+GET     /addParticipant                  controllers.ParticipantsController.addParticipant(team: String, participant: String)
+GET     /dropParticipant                 controllers.ParticipantsController.removeParticipant(team: String, participant: String)
+
+GET     /getTeams                        controllers.TeamController.getTeams
+GET     /addTeam                         controllers.TeamController.addTeam(team)
+GET     /dropTeam                        controllers.TeamController.dropTeam(team)
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+      
