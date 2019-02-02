@@ -5,7 +5,7 @@
 
 GET     /getParticipants                 controllers.ParticipantsController.getParticipants(team: String)
 GET     /addParticipant                  controllers.ParticipantsController.addParticipant(team: String, participant: String)
-GET     /dropParticipant                 controllers.ParticipantsController.removeParticipant(team: String, participant: String)
+GET     /dropParticipant                 controllers.ParticipantsController.dropParticipant(team: String, participant: String)
 
 GET     /getTeams                        controllers.TeamController.getTeams
 GET     /addTeam                         controllers.TeamController.addTeam(team)
