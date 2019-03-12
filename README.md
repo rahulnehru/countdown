@@ -97,5 +97,5 @@ This application will start on port 9000 and will be accessible through the end 
     This application is operated using web-sockets command. To test or develop the application, a chrome
 plugin ```Dark WebSocket Terminal``` can be used. 
 
-![](!dwst.png)
+![](dwst.png)
         
