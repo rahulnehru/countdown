@@ -9,78 +9,93 @@
   ##### Code : 200 OK
   ###### Example ```/standups```
 ```json
-{
-    "streams": ["auk", "ba", "test"]
-}
+[
+    "S1",
+    "S2"
+]
 ```
 
   #### A Standup details: ```GET /standups/[stream name]```
   ##### Code : 200 OK
- ###### Example ```/standups/auk```
+ ###### Example ```/standups/S1```
 ```json
 {
-    "team": [
-        {name: "team1", "speaker":"tom", allocation: 120 seconds},
-        {name: "team2", "speaker":"harry", allocation: 60 seconds}
+    id: 1,
+    name: "S1",
+    teams: [
+        {
+        id: 1,
+        name: "Team 1",
+        speaker: "Dave",
+        allocation: "180 seconds"
+        },
+        {
+        id: 2,
+        name: "Team 2",
+        speaker: "Tom",
+        allocation: "120 seconds"
+        }
     ]
 }
 ```
-  #### A Standup status: ```GET /standups/[stream name]/?status```
-  ##### Code : 200 OK
-  Returned ```status``` could be 
-  >in progress
-  >paused
-  ###### Example ```/standups/auk/?status```
-```json
-{
-    name: "team1",
-    "speaker":"tom",
-    remaining: 20 seconds
-    status: "in progress"
-}
-```
-  ##### Code : 410 Gone/Finished
+  #### Running a Standup
+    
+    Websocket connection is obtained before executing commands like start, next, pause, stop, exit etc
   
-  #### Start a standup: ```GET /standups/[stream name]/start```
-  ##### Code : 200 OK
-  Returned ```status``` will be 
-  >in progress
-  ###### Example ```/standups/auk/start```
-```json
-{
-    name: "team1",
-    "speaker":"tom",
-    remaining: 120 seconds
-    status: "start"
-}
-```
+  ##### To connect: ```GET    /standups/:name/connect```
+  ###### Sample response
+  ```
+  system:	Connection established.
+  ```  
+  ##### To start: ```start```
+    Once standup is started, other clients may connect and enquire standup status or close connection using ```close```
+  ###### Sample response
+  ```json
+  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
+  ```
+  
+  ##### To find status: ```status```
+  ###### Sample response
+  ```json
+  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
+  ```
 
-  #### Pause a standup update: ```GET /standups/[stream name]/pause```
-  ##### Code : 200 OK
-  Returned ```status``` will be 
-  >paused
-  ###### Example ```/standups/auk/pause```
-```json
-{
-    name: "team1",
-    "speaker":"tom",
-    remaining: 20 seconds
-    status: "paused"
-}
-```
-  ##### Code : 410 Gone/Finished
+  ##### To pause: ```pause```
+  ###### Sample response
+  ```json
+  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
+  ```
+  
+  ##### To skip to next: ```next```
+  ###### Sample response
+  ```json
+  {"name":"Team 2","speaker":"Tom","remaining":"161 seconds"}
+  ```
+  ###### If no more team left to update
+    ```{"message":"Standup S1 finished"}```
+    
+  ##### For client to exit : ```exit```
+  ###### Sample response
+  ```json
+  {"message":"Exiting. Standup may already be running"}
+  ```
+    
+  ##### To stop the standup : ```stop```
+  ###### Sample response
+  ```json
+  	{"message":"Standup S1 finished"}
+  ```
 
-  #### Skip a standup update: ```GET /standups/[stream name]/next```
-  ##### Code : 200 OK
-  Returned ```status``` will be 
-  >in progress
-  ###### Example ```/standups/auk/pause```
-```json
-{
-    name: "team2",
-    "speaker":"harry",
-    remaining: 120 seconds
-    status: "in progress"
-}
-```
-  ##### Code : 410 Gone/Finished
+## Runnning the application
+
+### Prerequisite
+* Java 8
+* Sbt 1.x
+
+    This is a typical play application which ca either be run from ide in development or using ```sbt run```. 
+This application will start on port 9000 and will be accessible through the end points listed above.
+    This application is operated using web-sockets command. To test or develop the application, a chrome
+plugin ```Dark WebSocket Terminal``` can be used. 
+
+![](!dwst.png)
+        
