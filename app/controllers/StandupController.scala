@@ -1,6 +1,6 @@
 package controllers
 
-import actors.StandupCountdownServiceActor
+import actors.{StandupClientCountdownServiceActor, StandupAdminCountdownServiceActor}
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import javax.inject.Inject
@@ -29,12 +29,16 @@ class StandupController @Inject()(cc: ControllerComponents)(implicit system: Act
 
   def connect(standupName: String) = WebSocket.accept[String, String] { request =>
     ActorFlow.actorRef[String, JsValue] ( out =>
-      StandupCountdownServiceActor.props(out, standupName, standupRepo)
+      StandupAdminCountdownServiceActor.props(out, standupName, standupRepo)
     ).map(_.toString())
   }
 
   def pause(standupName: String) = Action(Ok(s"paused $standupName"))
 
-  def status(standupName: String) = Action(Ok(s"paused $standupName"))
+  def status(standupName: String) = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef[String, JsValue] ( out =>
+      StandupClientCountdownServiceActor.props(out, standupName, standupRepo)
+    ).map(_.toString())
+  }
 
 }
