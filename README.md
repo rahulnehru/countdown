@@ -103,4 +103,3 @@ This application will start on port 9000 and will be accessible through the end 
 plugin ```Dark WebSocket Terminal``` can be used. 
 
 ![](dwst.png)
-        
