@@ -21,8 +21,8 @@ object countdown {
   object InMemoryDB extends DB {
     override def standups: List[Standup] = List(
       Standup(id = 1, name = "S1", teams = NonEmptyList(
-        Team(id = 1, name = "Team 1", speaker = "Dave", Duration.ofSeconds(180)),
-        List(Team(id = 2, name = "Team 2", speaker = "Tom", Duration.ofSeconds(120)))
+        Team(id = 1, name = "Team 1", speaker = "Dave", Duration.ofSeconds(5)),
+        List(Team(id = 2, name = "Team 2", speaker = "Tom", Duration.ofSeconds(10)))
       )),
       Standup(id = 2, name = "S2", teams = NonEmptyList(
         Team(id = 1, name = "Team 3", speaker = "Jack", Duration.ofSeconds(90)),

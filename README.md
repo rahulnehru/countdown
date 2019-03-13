@@ -40,51 +40,56 @@
 ```
   #### Running a Standup
     
-    Websocket connection is obtained before executing commands like start, next, pause, stop, exit etc
+    We have admin and client connection. Admin connection is used to manage the standup while client connection is used to
+    enquire standup status.  
+    
+  ##### Admin
+  An admin can 
+  * start : Start the standup
+  * stop: Stop the standup
+  * pause: Pause an update
+  * next: Skip the update  
   
-  ##### To connect: ```GET    /standups/:name/connect```
-  ###### Sample response
+  ###### To start: ```GET    /admin/standups/:name/connect```
+  ####### Sample response
   ```
-  system:	Connection established.
+  {"message":"Standup S1 started"}
   ```  
-  ##### To start: ```start```
-    Once standup is started, other clients may connect and enquire standup status or close connection using ```close```
-  ###### Sample response
+  ###### To pause: ```pause```
+  ####### Sample response
   ```json
   {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
   ```
   
-  ##### To find status: ```status```
-  ###### Sample response
-  ```json
-  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
-  ```
-
-  ##### To pause: ```pause```
-  ###### Sample response
-  ```json
-  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
-  ```
-  
-  ##### To skip to next: ```next```
-  ###### Sample response
+  ###### To skip to next: ```next```
+  ####### Sample response
   ```json
   {"name":"Team 2","speaker":"Tom","remaining":"161 seconds"}
   ```
-  ###### If no more team left to update
-    ```{"message":"Standup S1 finished"}```
-    
-  ##### For client to exit : ```exit```
-  ###### Sample response
-  ```json
-  {"message":"Exiting. Standup may already be running"}
-  ```
-    
-  ##### To stop the standup : ```stop```
-  ###### Sample response
+
+  ###### To stop the standup : ```stop```
+  ####### Sample response
   ```json
   	{"message":"Standup S1 finished"}
   ```
+
+  ##### Client
+  An client can 
+  * connect : Connect to the standup in progress to get status update
+  * disconnect: Disconnect from the standup in progress
+
+  ##### To connect: ```GET    /client/standups/:name/connect```
+    
+  ###### Sample response
+  ```json
+  {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}
+  ```
+  
+  ##### To disconnect: ```disconnect```
+  ###### Sample response
+  ```json
+  {"message":"Disconnecting from S1."}
+  ```    
 
 ## Runnning the application
 
@@ -98,4 +103,3 @@ This application will start on port 9000 and will be accessible through the end 
 plugin ```Dark WebSocket Terminal``` can be used. 
 
 ![](dwst.png)
-        
