@@ -27,13 +27,13 @@
         id: 1,
         name: "Team 1",
         speaker: "Dave",
-        allocation: "180 seconds"
+        allocationInSeconds: 10
         },
         {
         id: 2,
         name: "Team 2",
         speaker: "Tom",
-        allocation: "120 seconds"
+        allocationInSeconds: 10
         }
     ]
 }
@@ -51,13 +51,13 @@
   * next: Skip the update  
   
   ###### To start: ```GET    /admin/standups/:name/connect```
-  > Sample response ``` {"message":"Standup S1 started"}```  
+  > Sample response ``` {"name":"Team 2","speaker":"Tom","remainingSeconds":7}```  
   
   ###### To pause: ```pause```
-  > Sample response ```{"name":"Team 1","speaker":"Dave","remaining":"161 seconds"}```
+  > Sample response ```{"name":"Team 2","speaker":"Tom","remainingSeconds":7}```
   
   ###### To skip to next: ```next```
-  > Sample response ``` {"name":"Team 2","speaker":"Tom","remaining":"161 seconds"} ```
+  > Sample response ``` {"name":"Team 2","speaker":"Tom","remainingSeconds":7} ```
 
   ###### To stop the standup : ```stop```
   

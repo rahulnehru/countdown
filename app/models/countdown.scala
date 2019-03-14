@@ -21,7 +21,7 @@ object countdown {
   object InMemoryDB extends DB {
     override def standups: List[Standup] = List(
       Standup(id = 1, name = "S1", teams = NonEmptyList(
-        Team(id = 1, name = "Team 1", speaker = "Dave", Duration.ofSeconds(5)),
+        Team(id = 1, name = "Team 1", speaker = "Dave", Duration.ofSeconds(20)),
         List(Team(id = 2, name = "Team 2", speaker = "Tom", Duration.ofSeconds(10)))
       )),
       Standup(id = 2, name = "S2", teams = NonEmptyList(
@@ -33,10 +33,10 @@ object countdown {
   }
 
   implicit val durationWrite: Writes[Duration] = (o: Duration) => {
-    JsString(s"${o.getSeconds.toString} seconds")
+    JsNumber(o.getSeconds)
   }
 
-  case class Team(id: Long, name: String, speaker: String, allocation: Duration)
+  case class Team(id: Long, name: String, speaker: String, allocationInSeconds: Duration)
   case object Team {
     implicit val teamFormat = Json.format[Team]
   }
@@ -110,7 +110,7 @@ object countdown {
         "name" -> update.team.name,
         "name" -> update.team.name,
         "speaker" -> update.team.speaker,
-        "remaining" -> s"${update.countdown.remaining()} seconds"
+        "remainingSeconds" -> update.countdown.remaining()
       )
     }
 
@@ -121,7 +121,7 @@ object countdown {
 
     private val queue: mutable.Queue[TeamUpdate] = standups.find(_.name == standupName).map { standup =>
         val teamUpdateQueue = Queue[TeamUpdate]()
-        standup.teams.toList.foreach(t => teamUpdateQueue.enqueue(TeamUpdate(t, new Countdown(t.allocation))))
+        standup.teams.toList.foreach(t => teamUpdateQueue.enqueue(TeamUpdate(t, new Countdown(t.allocationInSeconds))))
         teamUpdateQueue
       }.getOrElse(Queue.empty[TeamUpdate])
 
