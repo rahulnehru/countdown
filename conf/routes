@@ -7,9 +7,9 @@ GET     /standups                       controllers.StandupController.allStandup
 GET     /standups/:name                 controllers.StandupController.standup(name)
 
 # TO do change to Post
-GET    /admin/standups/:name/connect    controllers.StandupController.connect(name)
+GET    /admin/standups/:name/start    controllers.StandupController.start(name)
 
-GET    /client/standups/:name/connect   controllers.StandupController.status(name)
+GET    /client/standups/:name/status   controllers.StandupController.status(name)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file          controllers.Assets.versioned(path="/public", file: Asset)

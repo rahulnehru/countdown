@@ -27,7 +27,7 @@ class StandupController @Inject()(cc: ControllerComponents)(implicit system: Act
     standupRepo.standups.find(_.name == standupName).fold(NotFound(s"No standup with name $standupName"))(s => Ok(Json.toJson(s)))
   }
 
-  def connect(standupName: String) = WebSocket.accept[String, String] { request =>
+  def start(standupName: String) = WebSocket.accept[String, String] { request =>
     ActorFlow.actorRef[String, JsValue] ( out =>
       StandupAdminCountdownServiceActor.props(out, standupName, standupRepo)
     ).map(_.toString())

@@ -50,7 +50,7 @@
   * pause: Pause an update
   * next: Skip the update  
   
-  ###### To start: ```GET    /admin/standups/:name/connect```
+  ###### To start: ```GET    /admin/standups/:name/start```
   > Sample response ``` {"name":"Team 2","speaker":"Tom","remainingSeconds":7}```  
   
   ###### To pause: ```pause```
@@ -68,7 +68,7 @@
   * connect : Connect to the standup in progress to get status update
   * disconnect: Disconnect from the standup in progress
 
-  ##### To connect: ```GET    /client/standups/:name/connect```
+  ##### To obtain status: ```GET    /client/standups/:name/status```
     
   > Sample response ``` {"name":"Team 1","speaker":"Dave","remaining":"161 seconds"} ```
   
