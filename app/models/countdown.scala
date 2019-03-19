@@ -20,13 +20,35 @@ object countdown {
 
   object InMemoryDB extends DB {
     override def standups: List[Standup] = List(
-      Standup(id = 1, name = "S1", teams = NonEmptyList(
-        Team(id = 1, name = "Team 1", speaker = "Dave", Duration.ofSeconds(20)),
-        List(Team(id = 2, name = "Team 2", speaker = "Tom", Duration.ofSeconds(10)))
+      Standup(id = 1, name = "main", teams = NonEmptyList(
+        Team(id = 1, name = "Releases", speaker = "Steff", Duration.ofSeconds(45)),
+        List(
+          Team(id = 2, name = "Fes", speaker = "Tommy", Duration.ofSeconds(45)),
+          Team(id = 3, name = "L3", speaker = "David", Duration.ofSeconds(45)),
+          Team(id = 4, name = "Out of Country", speaker = "Victor", Duration.ofSeconds(45)),
+          Team(id = 5, name = "CI", speaker = "Katie", Duration.ofSeconds(45)),
+          Team(id = 6, name = "Tech CI", speaker = "Dominic", Duration.ofSeconds(45)),
+          Team(id = 6, name = "Iuliana", speaker = "Standard Sections", Duration.ofSeconds(45)),
+          Team(id = 7, name = "Small projects", speaker = "Jeremy", Duration.ofSeconds(45)),
+          Team(id = 8, name = "Actions", speaker = "Matt", Duration.ofSeconds(45))
+        ),
       )),
-      Standup(id = 2, name = "S2", teams = NonEmptyList(
-        Team(id = 1, name = "Team 3", speaker = "Jack", Duration.ofSeconds(90)),
-        List(Team(id = 1, name = "Team 4", speaker = "Jerry", Duration.ofSeconds(90)))
+      Standup(id = 2, name = "ba", teams = NonEmptyList(
+        Team(id = 1, name = "Katie", speaker = "Katie", Duration.ofSeconds(90)),
+        List(
+          Team(id = 2, name = "Kate", speaker = "Kate", Duration.ofSeconds(45)),
+          Team(id = 3, name = "Samier", speaker = "Samier", Duration.ofSeconds(45)),
+          Team(id = 4, name = "Jeremy", speaker = "Jeremy", Duration.ofSeconds(45)),
+          Team(id = 5, name = "Thomas", speaker = "Thomas", Duration.ofSeconds(45)),
+          Team(id = 6, name = "Tommy", speaker = "Tommy", Duration.ofSeconds(45)),
+          Team(id = 7, name = "Harry", speaker = "Harry", Duration.ofSeconds(45)),
+          Team(id = 8, name = "Alice", speaker = "Alice", Duration.ofSeconds(45)),
+          Team(id = 9, name = "Dean", speaker = "Dean", Duration.ofSeconds(45)),
+          Team(id = 10, name = "Eoin", speaker = "Eoin", Duration.ofSeconds(45)),
+          Team(id = 11, name = "Victor", speaker = "Victor", Duration.ofSeconds(45)),
+          Team(id = 12, name = "Fred", speaker = "Fred", Duration.ofSeconds(45)),
+          Team(id = 13, name = "Jamie", speaker = "Jamie", Duration.ofSeconds(45))
+        )
       ))
     )
 

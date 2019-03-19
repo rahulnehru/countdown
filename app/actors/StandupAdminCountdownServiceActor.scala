@@ -25,6 +25,7 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
 
   override def receive: Receive = {
     case "start" =>
+      println("Started admin connection")
       standupRepository.status(standupName).orElse(standupRepository.start(standupName))
       out ! toJson(Message(s"Standup $standupName started"))
       context.become(started)
@@ -38,8 +39,10 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
       } self ! "next"
 
     case "next" =>
+      println("Next person")
       standupRepository.next(standupName).fold(self ! "stop")(_ => self ! "status")
     case "pause" =>
+      println("Pause")
       out ! toJson(Message(s"Speaker $standupName paused"))
       standupRepository.pause(standupName)
       self ! "status"
@@ -52,7 +55,7 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
 
   override def postStop(): Unit = {
     super.postStop()
-    println("Closing connection")
+    println("Closing admin connection")
   }
 }
 
