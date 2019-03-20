@@ -36,6 +36,7 @@ class StandupController @Inject()(cc: ControllerComponents)(implicit system: Act
   def pause(standupName: String) = Action(Ok(s"paused $standupName"))
 
   def status(standupName: String) = WebSocket.accept[String, String] { request =>
+    println("Client connected")
     ActorFlow.actorRef[String, JsValue] ( out =>
       StandupClientCountdownServiceActor.props(out, standupName, standupRepo)
     ).map(_.toString())

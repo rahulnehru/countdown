@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 class StandupClientCountdownServiceActor(out: ActorRef, standupName: String, standupRepository: StandupRepository) extends Actor {
 
   private def isValidStandup() = standupRepository.standups.exists(_.name == standupName)
-  private def isInProgress() = standupRepository.status(standupName).exists(_.countdown.remaining() > 0)
+  private def isInProgress() = standupRepository.status(standupName).exists(_.countdown.remaining() >= 0)
 
   val cancellable =
     context.system.scheduler.schedule(
@@ -20,6 +20,7 @@ class StandupClientCountdownServiceActor(out: ActorRef, standupName: String, sta
 
   override def receive: Receive = {
     case "disconnect" =>
+      println("No live standup")
       out ! toJson(Message(s"Disconnecting from $standupName."))
       cancellable.cancel()
       self ! PoisonPill
@@ -32,7 +33,7 @@ class StandupClientCountdownServiceActor(out: ActorRef, standupName: String, sta
 
   override def postStop(): Unit = {
     super.postStop()
-    println("Closing connection")
+    println("Closing client connection")
   }
 }
 
