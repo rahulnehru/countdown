@@ -31,6 +31,13 @@ trait StandupRepository {
       _           = add(context)
     } yield teamUpdate
 
+  def unpause(name: StandupName): Option[TeamUpdate] =
+    for {
+      context     <- currentStandupsContext.get(name)
+      teamUpdate  <- context.unpause()
+      _           = add(context)
+    } yield teamUpdate
+
   def next(name: StandupName): Option[TeamUpdate] = for {
     context     <- currentStandupsContext.get(name)
     teamUpdate  <- context.startNext()

@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, PoisonPill, Props}
 import models.countdown._
 import play.api.libs.json.Json.toJson
 import repository.StandupRepository
+
 import scala.concurrent.duration._
 
 class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, standupRepository: StandupRepository) extends Actor {
@@ -33,6 +34,7 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
 
   def started: Receive = {
     case "status" =>
+      out ! toJson(standupRepository.status(standupName))
       for {
         standup <- standupRepository.status(standupName)
         if(standup.countdown.remaining() < 1)
@@ -41,6 +43,10 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
     case "next" =>
       println("Next person")
       standupRepository.next(standupName).fold(self ! "stop")(_ => self ! "status")
+    case "unpause" =>
+      println("Unpause / continue")
+      standupRepository.unpause(standupName)
+      self ! "status"
     case "pause" =>
       println("Pause")
       out ! toJson(Message(s"Speaker $standupName paused"))
