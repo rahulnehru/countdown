@@ -2,7 +2,7 @@ name := "countdown"
  
 version := "1.0" 
       
-lazy val `countdown` = (project in file(".")).enablePlugins(PlayScala)
+lazy val `countdown` = (project in file(".")).enablePlugins(PlayScala, UniversalPlugin, JavaAppPackaging, DockerPlugin)
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
@@ -17,6 +17,12 @@ libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
+unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 
-      
+// exposing the play ports
+dockerExposedPorts := Seq(9000, 9443)
+dockerEntrypoint := Seq(
+  "bin/countdown",
+  "-Dconfig.resource=prod.conf",
+  "-Dlogger.resource=logback-prod.xml")
+// run using docker run -p 9000:9000 --rm countdown:1.0
