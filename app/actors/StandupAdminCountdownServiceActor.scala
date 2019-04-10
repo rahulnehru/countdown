@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, PoisonPill, Props}
-import models.countdown._
+import models.Message
 import play.api.libs.json.Json.toJson
 import repository.StandupRepository
 
@@ -10,7 +10,7 @@ import scala.concurrent.duration._
 class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, standupRepository: StandupRepository) extends Actor {
 
 
-  if( !standupRepository.standups.exists(_.name == standupName)){
+  if( !standupRepository.getAll.exists(_.name == standupName)){
     out ! toJson(Message(s"No such $standupName standup exist!!!"))
     self ! PoisonPill
   } else {

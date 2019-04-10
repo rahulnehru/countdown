@@ -3,7 +3,6 @@ package models
 import java.time.Duration
 
 import cats.data.NonEmptyList
-import models.countdown.{InMemoryDB, Standup, StandupContext, Team}
 import org.scalatest.{Matchers, WordSpec}
 
 class StandupContextSpec extends WordSpec with Matchers {

@@ -1,0 +1,216 @@
+[ {
+  "id" : 1,
+  "name" : "main",
+  "displayName" : "Access UK Main Standup",
+  "teams" : [ {
+    "id" : 1,
+    "name" : "Releases",
+    "speaker" : "Steff",
+    "allocationInSeconds" : 30
+  }, {
+    "id" : 6,
+    "name" : "Tech CI",
+    "speaker" : "Dominic",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 9,
+    "name" : "CWI",
+    "speaker" : "Shiv",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 4,
+    "name" : "Out of Country",
+    "speaker" : "Victor",
+    "allocationInSeconds" : 60
+  }, {
+    "id" : 8,
+    "name" : "Small projects",
+    "speaker" : "Jeremy",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 2,
+    "name" : "Fes",
+    "speaker" : "Tommy / Fred",
+    "allocationInSeconds" : 11
+  }, {
+    "id" : 5,
+    "name" : "CI",
+    "speaker" : "Katie",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 3,
+    "name" : "L3",
+    "speaker" : "David",
+    "allocationInSeconds" : 30
+  }, {
+    "id" : 7,
+    "name" : "Standard Sections",
+    "speaker" : "Daniel",
+    "allocationInSeconds" : 30
+  }, {
+    "id" : 11,
+    "name" : "Any other business",
+    "speaker" : "Anyone",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 10,
+    "name" : "Actions",
+    "speaker" : "Matt",
+    "allocationInSeconds" : 30
+  } ]
+}, {
+  "id" : 2,
+  "name" : "ba",
+  "displayName" : "Access UK BA Standup",
+  "teams" : [ {
+    "id" : 1,
+    "name" : "Katie",
+    "speaker" : "Katie",
+    "allocationInSeconds" : 90
+  }, {
+    "id" : 2,
+    "name" : "Kate",
+    "speaker" : "Kate",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 3,
+    "name" : "Samier",
+    "speaker" : "Samier",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 4,
+    "name" : "Jeremy",
+    "speaker" : "Jeremy",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 5,
+    "name" : "Thomas",
+    "speaker" : "Thomas",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 6,
+    "name" : "Tommy",
+    "speaker" : "Tommy",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 7,
+    "name" : "Harry",
+    "speaker" : "Harry",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 8,
+    "name" : "Alice",
+    "speaker" : "Alice",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 9,
+    "name" : "Dean",
+    "speaker" : "Dean",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 10,
+    "name" : "Eoin",
+    "speaker" : "Eoin",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 11,
+    "name" : "Victor",
+    "speaker" : "Victor",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 12,
+    "name" : "Fred",
+    "speaker" : "Fred",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 13,
+    "name" : "Jamie",
+    "speaker" : "Jamie",
+    "allocationInSeconds" : 45
+  } ]
+}, {
+  "id" : 3,
+  "name" : "team5",
+  "displayName" : "Access UK Team 5 Standup",
+  "teams" : [ {
+    "id" : 1,
+    "name" : "Team 5",
+    "speaker" : "Tiberiu",
+    "allocationInSeconds" : 30
+  }, {
+    "id" : 2,
+    "name" : "Team 5",
+    "speaker" : "Alan",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 3,
+    "name" : "Team 5",
+    "speaker" : "Alejandro",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 4,
+    "name" : "Team 5",
+    "speaker" : "Raaj",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 5,
+    "name" : "Team 5",
+    "speaker" : "Jeremy",
+    "allocationInSeconds" : 100
+  } ]
+}, {
+  "id" : 4,
+  "name" : "dev",
+  "displayName" : "Access UK Dev Symposium",
+  "teams" : [ {
+    "id" : 1,
+    "name" : "Releases",
+    "speaker" : "Steff",
+    "allocationInSeconds" : 90
+  }, {
+    "id" : 2,
+    "name" : "L3",
+    "speaker" : "David",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 3,
+    "name" : "CWI",
+    "speaker" : "Shiv",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 4,
+    "name" : "Out of Country",
+    "speaker" : "Alua",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 5,
+    "name" : "Standard Sections",
+    "speaker" : "Daniel N",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 6,
+    "name" : "Tech CI",
+    "speaker" : "Dom / Parvez",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 7,
+    "name" : "CI",
+    "speaker" : "Rahul / Elliot",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 8,
+    "name" : "FES",
+    "speaker" : "Daniel T",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 9,
+    "name" : "Team 5",
+    "speaker" : "Alan / Alejandro",
+    "allocationInSeconds" : 45
+  }, {
+    "id" : 10,
+    "name" : "EEA FP",
+    "speaker" : "Ethan / Adam",
+    "allocationInSeconds" : 45
+  } ]
+} ]
