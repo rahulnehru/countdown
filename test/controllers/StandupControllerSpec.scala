@@ -74,7 +74,7 @@ class StandupControllerSpec extends WordSpec with Matchers with Mockito with Stu
     "return a JSON with standup specified if it exists" in new Setup {
       when(standupRepo.get(catchAny[String])).thenReturn(Some(standups.head))
 
-      val result: Future[Result] = controller.get("test").apply(FakeRequest())
+      val result: Future[Result] = controller.get("test").apply(FakeRequest().withJsonBody(Json.toJson(Map("a"->"a"))))
 
       status(result) shouldBe OK
       bodyToJson(result).as[Standup] shouldBe s1
@@ -93,6 +93,7 @@ class StandupControllerSpec extends WordSpec with Matchers with Mockito with Stu
 
     "should return the standup and call the standup repo add" in new Setup {
       when(standupRepo.add(catchAny[Standup])).thenReturn(Future.successful(s1))
+      when(standupRepo.get(catchAny[String])).thenReturn(None)
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
       val result: Future[Result] = controller.add.apply(fakeReq)
@@ -100,6 +101,17 @@ class StandupControllerSpec extends WordSpec with Matchers with Mockito with Stu
       verify(standupRepo).add(catchAny[Standup])
       status(result) shouldBe CREATED
       bodyToJson(result).as[Standup] shouldBe s1
+    }
+
+    "should return a 409 if the standup is valid but name already exists" in new Setup {
+      when(standupRepo.add(catchAny[Standup])).thenReturn(Future.successful(s1))
+      when(standupRepo.get(catchAny[String])).thenReturn(Some(s1))
+
+      val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
+      val result: Future[Result] = controller.add.apply(fakeReq)
+
+      verify(standupRepo, times(0)).add(catchAny[Standup])
+      status(result) shouldBe CONFLICT
     }
 
     "should return a 422 and not save to db" in new Setup {
@@ -116,14 +128,14 @@ class StandupControllerSpec extends WordSpec with Matchers with Mockito with Stu
 
     "should return the new standup and call the standup repo edit" in new Setup {
       when(standupRepo.get(catchAny[String])).thenReturn(Some(s1))
-      when(standupRepo.edit(catchAny[Standup])).thenReturn(Future.successful(s1))
+      when(standupRepo.edit(catchAny[Standup])).thenReturn(Future.successful(s2))
 
-      val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
+      val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s2))
       val result: Future[Result] = controller.edit.apply(fakeReq)
 
-      verify(standupRepo).edit(catchAny[Standup])
+      verify(standupRepo).edit(s2)
       status(result) shouldBe OK
-      bodyToJson(result).as[Standup] shouldBe s1
+      bodyToJson(result).as[Standup] shouldBe s2
     }
 
     "should return a 404 and not save to db" in new Setup {
@@ -198,7 +210,7 @@ class StandupControllerSpec extends WordSpec with Matchers with Mockito with Stu
       status(result) shouldBe OK
     }
 
-    "return 409 if standup is found and not live" in new Setup  {
+    "return 410 if standup is found and not live" in new Setup  {
       when(standupRepo.get(catchAny[String])).thenReturn(Some(s1))
       when(standupRepo.status(catchAny[String])).thenReturn(None)
 

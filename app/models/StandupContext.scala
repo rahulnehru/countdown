@@ -1,5 +1,7 @@
 package models
 
+import java.util.{Timer, TimerTask}
+
 import scala.collection.mutable
 import scala.collection.mutable.Queue
 import scala.util.Try
@@ -14,6 +16,7 @@ case class StandupContext(standupName: String, standups: List[Standup]){
   private var current: Option[TeamUpdate] = None
 
   private def next(): Option[TeamUpdate] = Try {
+    current.foreach(_.countdown.pause())
     val n = queue.dequeue()
     current = Some(n)
     n
@@ -31,6 +34,18 @@ case class StandupContext(standupName: String, standups: List[Standup]){
   def unpause(): Option[TeamUpdate] = {
     current.foreach(_.countdown.unpause())
     current
+  }
+
+  def startStandup(): Option[TeamUpdate] = {
+    new Timer(standupName).scheduleAtFixedRate(new TimerTask {
+      override def run(): Unit = {
+        if (current.exists(_.countdown.remaining() <= 0)) {
+          val n = startNext()
+          if (n.isEmpty) this.cancel()
+        }
+      }
+    }, 0, 1000)
+    startNext()
   }
 
   def startNext(): Option[TeamUpdate] = {

@@ -11,12 +11,12 @@
     "id" : 6,
     "name" : "Tech CI",
     "speaker" : "Dominic",
-    "allocationInSeconds" : 45
+    "allocationInSeconds" : 60
   }, {
     "id" : 9,
     "name" : "CWI",
     "speaker" : "Shiv",
-    "allocationInSeconds" : 45
+    "allocationInSeconds" : 60
   }, {
     "id" : 4,
     "name" : "Out of Country",
@@ -30,8 +30,8 @@
   }, {
     "id" : 2,
     "name" : "Fes",
-    "speaker" : "Tommy / Fred",
-    "allocationInSeconds" : 11
+    "speaker" : "Fred",
+    "allocationInSeconds" : 60
   }, {
     "id" : 5,
     "name" : "CI",

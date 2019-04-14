@@ -23,13 +23,13 @@ class StandupController @Inject()(cc: ControllerComponents, standupRepo: JsonFil
   implicit val standupNamesWrites: OWrites[StandupNames] = Json.writes[StandupNames]
 
   private def isInProgress(standupName: String): Boolean = standupRepo.status(standupName).exists(_.countdown.remaining() >= 0)
+  private def standupNameIsTaken(standupName: String): Boolean = standupRepo.get(standupName).exists(_.name == standupName)
 
   def getAllStandups: Action[AnyContent] = Action {
     Ok(Json.toJson(standupRepo.getAll.map(s => StandupNames(s.name, s.displayName))))
   }
 
   def get(standupName: String): Action[AnyContent] = Action.async { request =>
-    withExistingStandupFromRequest(request) { s => Future.successful(Ok(Json.toJson(s))) }
     standupRepo.get(standupName).fold(
       Future.successful(NotFound(s"Standup with name: [$standupName] doesn't exist"))
     ) {
@@ -60,13 +60,17 @@ class StandupController @Inject()(cc: ControllerComponents, standupRepo: JsonFil
 
   def add: Action[AnyContent] = Action.async { request =>
     withStandupFromRequest(request) { standup =>
-      standupRepo.add(standup).map(s => Created(Json.toJson(s)))
+      if (standupNameIsTaken(standup.name)) Future { Conflict(s"Standup name: ${standup.name} is taken") }
+      else standupRepo.add(standup).map(s => Created(Json.toJson(s)))
     }
   }
 
   def edit: Action[AnyContent] = Action.async { request =>
-    withExistingStandupFromRequest(request) { standup =>
-      standupRepo.edit(standup).map(s => Ok(Json.toJson(s)))
+    withStandupFromRequest(request) { standup =>
+      if (standupRepo.get(standup.name).isDefined)
+        standupRepo.edit(standup).map(s => Ok(Json.toJson(s)))
+      else
+        Future.successful(NotFound(s"Standup with name: [${standup.name}] doesn't exist"))
     }
   }
 
