@@ -6,34 +6,118 @@
   - Speaker - Team member speaking in standup
 ## Endpoints
   #### Standups: ``` GET /standups```
-  ##### Code : 200 OK
+  ##### Code: 200 OK
   > Example ```/standups```
 ```json
 [
-    "S1",
-    "S2"
+    {
+      "name": "main",
+      "displayName": "Main Standup"
+    },
+    {
+      "name": "test",
+      "displayName": "Testing Standup"
+    }
 ]
 ```
-
+  #### Standups: ``` POST /standups ```
+  ##### Body: 
+  ```json
+ {
+  "id": 0,
+  "name": "String",
+  "displayName": "String",
+  "teams": [
+    {
+      "id": 0,
+      "name": "String",
+      "speaker": "String",
+      "allocationInSeconds": 60
+    }, 
+    {
+      "id": 1,
+      "name": "String",
+      "speaker": "String",
+      "allocationInSeconds": 60
+    }
+  ]
+ } 
+  ```
+  ##### Code: 201 CREATED
+  ##### Code: 409 Standup with that name exists
+  ##### Code: 422 Invalid JSON format
+  
+  #### Standups: ``` PUT /standups ```
+```json
+{
+    "id": 0,
+    "name": "String",
+    "displayName": "String",
+    "teams": [
+      {
+        "id": 0,
+        "name": "String",
+        "speaker": "String",
+        "allocationInSeconds": 60
+      }, 
+      {
+        "id": 1,
+        "name": "String",
+        "speaker": "String",
+        "allocationInSeconds": 60
+      }
+    ]
+} 
+```
+   ##### Code: 200 OK
+   ##### Code: 404 Standup to edit not found
+   ##### Code: 422 Invalid JSON format
+   
+  #### Standups: ``` DELETE /standups ```
+```json
+{
+    "id": 0,
+    "name": "String",
+    "displayName": "String",
+    "teams": [
+      {
+        "id": 0,
+        "name": "String",
+        "speaker": "String",
+        "allocationInSeconds": 60
+      }, 
+      {
+        "id": 1,
+        "name": "String",
+        "speaker": "String",
+        "allocationInSeconds": 60
+      }
+    ]
+} 
+```
+   ##### Code: 200 OK
+   ##### Code: 404 Standup to delete not found
+   ##### Code: 422 Invalid JSON format
+   
   #### A Standup details: ```GET /standups/[stream name]```
   ##### Code : 200 OK
  > Example ```/standups/S1```
 ```json
 {
-    id: 1,
-    name: "S1",
-    teams: [
+    "id": 1,
+    "name": "S1",
+    "teams": [
         {
-        id: 1,
-        name: "Team 1",
-        speaker: "Dave",
-        allocationInSeconds: 10
+          "id": 1,
+          "name": "Team 1",
+          "speaker": "Dave",
+          "allocationInSeconds": 10
         },
         {
-        id: 2,
-        name: "Team 2",
-        speaker: "Tom",
-        allocationInSeconds: 10
+          "id": 2,
+          "name": "Team 2",
+          "speaker": "Tom",
+          "allocationInSeconds": 10
         }
     ]
 }
@@ -45,13 +129,19 @@
     
   ##### Admin
   An admin can 
-  * start : Start the standup
+  * connect: Connect to the standup "instance"
+  * join: Join the standup if it is live
+  * start: Start the standup if it is not live
   * stop: Stop the standup
   * pause: Pause an update
   * next: Skip the update  
   
-  ###### To start: ```GET    /admin/standups/:name/start```
-  > Sample response ``` {"name":"Team 2","speaker":"Tom","remainingSeconds":7}```  
+  ###### To connect: ```GET    /admin/standups/:name/start```
+   
+  ###### To join a running standup: ```join```
+    
+  ###### To start: ```start```
+  > Sample response ```{"name":"Team 2","speaker":"Tom","remainingSeconds":7}```
   
   ###### To pause: ```pause```
   > Sample response ```{"name":"Team 2","speaker":"Tom","remainingSeconds":7}```
@@ -60,7 +150,6 @@
   > Sample response ``` {"name":"Team 2","speaker":"Tom","remainingSeconds":7} ```
 
   ###### To stop the standup : ```stop```
-  
   > Sample response ``` {"message":"Standup S1 finished"} ```
 
   ##### Client

@@ -28,7 +28,7 @@ trait StandupRepository {
   def start(name: StandupName): Option[TeamUpdate] = {
     val context = StandupContext(name, getAll)
     for {
-      teamUpdate  <- context.startNext()
+      teamUpdate  <- context.startStandup()
       _           = addToContext(context)
     } yield teamUpdate
 

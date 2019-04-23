@@ -2,7 +2,7 @@ package repository
 
 import java.io.{FileInputStream, PrintWriter}
 
-import models.{Standup, StandupContext}
+import models.Standup
 import play.api.libs.json.{Format, Json}
 
 import scala.concurrent.Future
@@ -14,8 +14,6 @@ class JsonFileStandupRepository extends StandupRepository {
   val fileName = "standups.json"
   implicit val formats: Format[Standup] = Standup.formats
 
-  var standupsContext: Map[StandupName, StandupContext] = Map.empty
-
   override def get(standupName: String): Option[Standup] = {
     standups.find(_.name == standupName)
   }
@@ -25,8 +23,12 @@ class JsonFileStandupRepository extends StandupRepository {
   }
 
   override def add(s: Standup): Future[Standup] = {
-    val newStandupsList = standups :+ s
-    saveStandups(newStandupsList).map(v => s)
+    val id: Long = standups.map(_.id).fold[Long](0){
+      (a,b) => if (a > b) a else b
+    } + 1
+    val newStandup = s.copy(id = id)
+    val newStandupsList = standups :+ newStandup
+    saveStandups(newStandupsList).map(v => newStandup)
   }
 
   override def edit(s: Standup): Future[Standup] = {

@@ -68,6 +68,14 @@ class JsonFileStandupRepositorySpec extends WordSpec with Matchers with BeforeAn
       repo.getAll shouldBe List(standups.head)
     }
 
+    "increment the id of standups when adding" in {
+      addStandup(s) shouldBe s
+      val s2WithNoId = s2.copy(id = 0)
+      val result = addStandup(s2WithNoId)
+
+      result.id shouldBe 2
+    }
+
   }
 
   "get" should {

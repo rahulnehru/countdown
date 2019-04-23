@@ -25,21 +25,22 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
       "status")(context.system.dispatcher)
 
   override def receive: Receive = {
-    case "start" =>
-      println("Started admin connection")
-      standupRepository.status(standupName).orElse(standupRepository.start(standupName))
-      out ! toJson(Message(s"Standup $standupName started"))
-      context.become(started)
+    case "connect" =>
+      println(s"${this.getClass.getCanonicalName} - Connected an admin")
+      context.become(connected)
   }
 
-  def started: Receive = {
+  def connected: Receive = {
+    case "start" =>
+      println(s"${this.getClass.getCanonicalName} - Started standup")
+      standupRepository.start(standupName)
+      context.become(connected)
+    case "join" =>
+      println(s"${this.getClass.getCanonicalName} - Joined standup")
+      println(standupName)
+      context.become(connected)
     case "status" =>
       out ! toJson(standupRepository.status(standupName))
-      for {
-        standup <- standupRepository.status(standupName)
-        if(standup.countdown.remaining() < 1)
-      } self ! "next"
-
     case "next" =>
       println("Next person")
       standupRepository.next(standupName).fold(self ! "stop")(_ => self ! "status")
