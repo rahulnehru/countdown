@@ -1,3 +1,5 @@
+import sbt.Keys.libraryDependencies
+
 name := "countdown"
  
 version := "1.0" 
@@ -15,12 +17,30 @@ herokuIncludePaths in Compile := Seq(
   "standups.json"
 )
 
-libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
+val testLibraryDependencies = Seq(
+  "org.scalatest" %% "scalatest" % "3.0.5",
+  "org.scalactic" %% "scalactic" % "3.0.5",
+  "org.mockito" %% "mockito-scala" % "1.4.0-beta.7",
+  "org.mockito" %% "mockito-scala-scalatest" % "1.4.0-beta.7"
+).map(_ % Test)
 
-libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % Test
+val slick = Seq(
+  "com.typesafe.play" %% "play-slick" % "3.0.1",
+  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.1",
+  "org.slf4j" % "slf4j-nop" % "1.6.4",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.0.1",
+  "com.github.tminglei" %% "slick-pg" % "0.17.2",
+  "com.github.tminglei" %% "slick-pg_play-json" % "0.17.2",
+  "com.github.tminglei" %% "slick-pg_joda-time" % "0.17.2"
+)
+
+libraryDependencies ++= Seq(
+  ehcache , ws , guice, evolutions,
+  "org.typelevel" %% "cats-core" % "1.6.0",
+  "org.postgresql" % "postgresql" % "42.2.5"//jdbc driver
+) ++
+  slick ++
+  testLibraryDependencies
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 

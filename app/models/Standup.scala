@@ -5,6 +5,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class Standup(id: Long, name: String, displayName: String, teams: NonEmptyList[Team])
+
 case class StandupNames(name: String, displayName: String)
 
 case object Standup {
