@@ -80,11 +80,11 @@ class JsonFileStandupRepositorySpec extends WordSpec with Matchers with BeforeAn
 
   "get" should {
 
-    "be able to get a standup by name from the db file" in {
+    "be able to find a standup by name from the db file" in {
       addStandup(s)
       addStandup(s2)
 
-      repo.get(s2.name) shouldBe Some(s2)
+      repo.find(s2.name) shouldBe Some(s2)
     }
   }
 

@@ -14,7 +14,7 @@ class JsonFileStandupRepository extends StandupRepository {
   val fileName = "standups.json"
   implicit val formats: Format[Standup] = Standup.formats
 
-  override def get(standupName: String): Option[Standup] = {
+  override def find(standupName: String): Option[Standup] = {
     standups.find(_.name == standupName)
   }
 

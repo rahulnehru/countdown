@@ -1,10 +1,11 @@
 import sbt.Keys.libraryDependencies
 
-name := "countdown"
+val appName = "countdown"
+
+name := appName
  
 version := "1.0" 
       
-lazy val `countdown` = (project in file(".")).enablePlugins(PlayScala, UniversalPlugin, JavaAppPackaging, DockerPlugin)
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
@@ -17,12 +18,19 @@ herokuIncludePaths in Compile := Seq(
   "standups.json"
 )
 
-val testLibraryDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.5",
-  "org.scalactic" %% "scalactic" % "3.0.5",
-  "org.mockito" %% "mockito-scala" % "1.4.0-beta.7",
-  "org.mockito" %% "mockito-scala-scalatest" % "1.4.0-beta.7"
-).map(_ % Test)
+val dockerTestkitLibs = Seq(
+  "com.whisk" %% "docker-testkit-scalatest" % "0.9.8",
+  "com.whisk" %% "docker-testkit-impl-spotify" % "0.9.8",
+  "com.whisk" %% "docker-testkit-config" % "0.9.8"
+)
+
+val testLibraryDependencies = (
+  Seq(
+    "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2",
+    "org.mockito" %% "mockito-scala" % "1.4.0-beta.7",
+    "org.mockito" %% "mockito-scala-scalatest" % "1.4.0-beta.7"
+  ) ++ dockerTestkitLibs
+  ).map(_ % "test, it")
 
 val slick = Seq(
   "com.typesafe.play" %% "play-slick" % "3.0.1",
@@ -42,7 +50,16 @@ libraryDependencies ++= Seq(
   slick ++
   testLibraryDependencies
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
+val ITest = config("it") extend(Test)
+scalaSource in ITest := baseDirectory.value / "/it"
+
+lazy val `countdown` = (project in file(".")).enablePlugins(PlayScala, UniversalPlugin, JavaAppPackaging, DockerPlugin)
+  .enablePlugins(PlayScala)
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  .settings(unmanagedResourceDirectories in IntegrationTest += baseDirectory.value / "it" / "resources")
+  .settings(ITest / parallelExecution := false )
+
 
 // exposing the play ports
 dockerExposedPorts := Seq(9000, 9443)

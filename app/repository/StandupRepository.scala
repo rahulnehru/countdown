@@ -8,7 +8,7 @@ trait StandupRepository {
 
   type StandupName = String
 
-  def get(standupName: String): Option[Standup]
+  def find(standupName: String): Option[Standup]
 
   def add(standup: Standup): Future[Standup]
 

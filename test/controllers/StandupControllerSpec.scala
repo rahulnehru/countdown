@@ -72,7 +72,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
   "get" should {
 
     "return a JSON with standup specified if it exists" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(Some(standups.head))
+      when(standupRepo.find(any[String])).thenReturn(Some(standups.head))
 
       val result: Future[Result] = controller.get("test").apply(FakeRequest().withJsonBody(Json.toJson(Map("a"->"a"))))
 
@@ -80,7 +80,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
       bodyToJson(result).as[Standup] shouldBe s1
     }
     "return a 404 if standup does not exist" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(None)
+      when(standupRepo.find(any[String])).thenReturn(None)
 
       val result: Future[Result] = controller.get("test").apply(FakeRequest())
 
@@ -93,7 +93,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
 
     "should return the standup and call the standup repo add" in new Setup {
       when(standupRepo.add(any[Standup])).thenReturn(Future.successful(s1))
-      when(standupRepo.get(any[String])).thenReturn(None)
+      when(standupRepo.find(any[String])).thenReturn(None)
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
       val result: Future[Result] = controller.add.apply(fakeReq)
@@ -105,7 +105,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
 
     "should return a 409 if the standup is valid but name already exists" in new Setup {
       when(standupRepo.add(any[Standup])).thenReturn(Future.successful(s1))
-      when(standupRepo.get(any[String])).thenReturn(Some(s1))
+      when(standupRepo.find(any[String])).thenReturn(Some(s1))
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
       val result: Future[Result] = controller.add.apply(fakeReq)
@@ -127,7 +127,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
   "edit" should {
 
     "should return the new standup and call the standup repo edit" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(Some(s1))
+      when(standupRepo.find(any[String])).thenReturn(Some(s1))
       when(standupRepo.edit(any[Standup])).thenReturn(Future.successful(s2))
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s2))
@@ -139,7 +139,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
     }
 
     "should return a 404 and not save to db" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(None)
+      when(standupRepo.find(any[String])).thenReturn(None)
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
       val result: Future[Result] = controller.edit.apply(fakeReq)
@@ -162,7 +162,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
   "remove" should {
 
     "should return 200 and call delete from the repo standup" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(Some(s1))
+      when(standupRepo.find(any[String])).thenReturn(Some(s1))
       when(standupRepo.delete(any[Standup])).thenReturn(Future.successful(true))
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
@@ -173,7 +173,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
     }
 
     "should return a 404 and not save to db" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(None)
+      when(standupRepo.find(any[String])).thenReturn(None)
 
       val fakeReq: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.toJson(s1))
       val result: Future[Result] = controller.remove.apply(fakeReq)
@@ -202,7 +202,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
       )
 
     "return 200 if standup is found and is live" in new Setup {
-      when(standupRepo.get(any[String])).thenReturn(Some(s1))
+      when(standupRepo.find(any[String])).thenReturn(Some(s1))
       when(standupRepo.status(any[String])).thenReturn(Some(dummyTeamUpdate))
 
       val result: Future[Result] = controller.isStandupLive("name").apply(FakeRequest())
@@ -211,7 +211,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
     }
 
     "return 410 if standup is found and not live" in new Setup  {
-      when(standupRepo.get(any[String])).thenReturn(Some(s1))
+      when(standupRepo.find(any[String])).thenReturn(Some(s1))
       when(standupRepo.status(any[String])).thenReturn(None)
 
       val result: Future[Result] = controller.isStandupLive("name").apply(FakeRequest())
@@ -220,7 +220,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
     }
 
     "return 404 if standup is not found" in new Setup  {
-      when(standupRepo.get(any[String])).thenReturn(None)
+      when(standupRepo.find(any[String])).thenReturn(None)
 
       val result: Future[Result] = controller.isStandupLive("name").apply(FakeRequest())
 
