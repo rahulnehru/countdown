@@ -5,12 +5,12 @@
 
 # Standups CRUD
 POST    /standups                       controllers.StandupController.add
-GET     /standups                       controllers.StandupController.getAllStandups
+GET     /standups                       controllers.StandupController.getAllStandUps
 PUT     /standups                       controllers.StandupController.edit
 DELETE  /standups                       controllers.StandupController.remove
 
 GET     /standups/:name                 controllers.StandupController.get(name)
-GET     /standups/:name/status          controllers.StandupController.isStandupLive(name)
+GET     /standups/:name/status          controllers.StandupController.isStandUpLive(name)
 
 # TO do change to Post
 GET     /admin/standups/:name/start     controllers.StandupController.start(name)

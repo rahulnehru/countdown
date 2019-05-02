@@ -9,7 +9,7 @@ class StandupContextSpec extends WordSpec with Matchers {
 
   trait InitialisedStandupContext {
 
-    val testStandups = List(
+    val testStandups = Set(
       Standup(id = 1, name = "test", displayName="Test Standup", teams = NonEmptyList(
         Team(id = 1, name = "First Team", speaker = "First Speaker", Duration.ofSeconds(45)),
         List(

@@ -6,7 +6,7 @@ import scala.collection.mutable
 import scala.collection.mutable.Queue
 import scala.util.Try
 
-case class StandupContext(standupName: String, standups: List[Standup]){
+case class StandupContext(standupName: String, standups: Set[Standup]){
 
   private val queue: mutable.Queue[TeamUpdate] =
     standups.find(_.name == standupName).map { standup =>

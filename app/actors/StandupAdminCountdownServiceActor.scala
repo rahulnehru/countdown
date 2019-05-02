@@ -1,21 +1,23 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, PoisonPill, Props}
+import akka.pattern.pipe
 import models.Message
 import play.api.libs.json.Json.toJson
-import repository.StandupRepository
+import repository.StandUpRepository
 
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
-class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, standupRepository: StandupRepository) extends Actor {
+class StandupAdminCountdownServiceActor(out: ActorRef, standUpName: String, standupRepository: StandUpRepository) extends Actor {
 
+  implicit val ec: ExecutionContext  = context.dispatcher
 
-  if( !standupRepository.getAll.exists(_.name == standupName)){
-    out ! toJson(Message(s"No such $standupName standup exist!!!"))
-    self ! PoisonPill
-  } else {
-    self ! "start"
-  }
+  standupRepository
+    .exists(standUpName)
+    .fallbackTo(Future.successful(false))
+    .map(exist => if(exist) "start" else PoisonPill)
+    .pipeTo(self)
 
   val cancellable =
     context.system.scheduler.schedule(
@@ -33,29 +35,29 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
   def connected: Receive = {
     case "start" =>
       println(s"${this.getClass.getCanonicalName} - Started standup")
-      standupRepository.start(standupName)
+      standupRepository.start(standUpName)
       context.become(connected)
     case "join" =>
       println(s"${this.getClass.getCanonicalName} - Joined standup")
-      println(standupName)
+      println(standUpName)
       context.become(connected)
     case "status" =>
-      out ! toJson(standupRepository.status(standupName))
+      out ! toJson(standupRepository.status(standUpName))
     case "next" =>
       println("Next person")
-      standupRepository.next(standupName).fold(self ! "stop")(_ => self ! "status")
+      standupRepository.next(standUpName).fold(self ! "stop")(_ => self ! "status")
     case "unpause" =>
       println("Unpause / continue")
-      standupRepository.unpause(standupName)
+      standupRepository.unpause(standUpName)
       self ! "status"
     case "pause" =>
       println("Pause")
-      out ! toJson(Message(s"Speaker $standupName paused"))
-      standupRepository.pause(standupName)
+      out ! toJson(Message(s"Speaker $standUpName paused"))
+      standupRepository.pause(standUpName)
       self ! "status"
     case "stop" =>
-      out ! toJson(Message(s"Standup $standupName finished"))
-      standupRepository.stop(standupName)
+      out ! toJson(Message(s"Standup $standUpName finished"))
+      standupRepository.stop(standUpName)
       cancellable.cancel()
       self ! PoisonPill
   }
@@ -67,5 +69,5 @@ class StandupAdminCountdownServiceActor(out: ActorRef, standupName: String, stan
 }
 
 object StandupAdminCountdownServiceActor {
-  def props(out: ActorRef, standupName: String, standupRepo: StandupRepository) = Props(new StandupAdminCountdownServiceActor(out, standupName, standupRepo: StandupRepository))
+  def props(out: ActorRef, standupName: String, standupRepo: StandUpRepository) = Props(new StandupAdminCountdownServiceActor(out, standupName, standupRepo: StandUpRepository))
 }

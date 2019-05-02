@@ -10,7 +10,7 @@ import play.api.db.slick.DatabaseConfigProvider
 
 //TODO use with GuiceOneAppPerSuite
 
-class PostgresStandupRepositorySpec extends WordSpec with Matchers with PostgresContainerSetup with OptionValues {
+class PostgresStandUpRepositorySpec extends WordSpec with Matchers with PostgresContainerSetup with OptionValues {
 
   val existingStandUpName = "S1"
 
@@ -29,19 +29,19 @@ class PostgresStandupRepositorySpec extends WordSpec with Matchers with Postgres
 
   override def afterAll(): Unit = super.afterAll()
 
-  private lazy val repository = new PostgresStandupRepository(fakeapp.injector.instanceOf(classOf[DatabaseConfigProvider]))
+  private lazy val repository = new PostgresStandUpRepository(fakeapp.injector.instanceOf(classOf[DatabaseConfigProvider]))
 
   "A repository" should {
 
     "find a standUp" in {
-        repository.find(existingStandUpName).map(_.name) shouldBe Some("S1")
+        whenReady(repository.find(existingStandUpName))(standUp => standUp.map(_.name).value shouldBe "S1")
     }
 
     "add a team" in {
       val result = repository.addTeams(existingStandUpName, Set(Team(3, "T3", "Speaker 3", Duration.ofMinutes(1))))
       whenReady(result) { teamsAdded =>
         teamsAdded shouldBe 1
-        repository.find(existingStandUpName).map(_.teams.size) shouldBe Some(3)
+        whenReady(repository.find(existingStandUpName))(standUp => standUp.map(_.teams.size).value shouldBe 3)
       }
     }
 
@@ -49,7 +49,7 @@ class PostgresStandupRepositorySpec extends WordSpec with Matchers with Postgres
       val result = repository.removeTeams(Set("T3"))
       whenReady(result) { teamsRemoved =>
         teamsRemoved shouldBe 1
-        repository.find(existingStandUpName).map(_.teams.size) shouldBe Some(2)
+        whenReady(repository.find(existingStandUpName))(standUp => standUp.map(_.teams.size).value shouldBe 2)
       }
     }
 

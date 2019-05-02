@@ -1,106 +1,103 @@
 package controllers
 
-import actors.{StandupAdminCountdownServiceActor, StandupClientCountdownServiceActor}
+import actors.{StandupAdminCountdownServiceActor, StandUpClientCountdownServiceActor}
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
 import models.{Standup, StandupNames}
+import play.api.Logging
 import play.api.libs.json.{Format, JsValue, Json, OWrites}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket.MessageFlowTransformer
 import play.api.mvc._
-import repository.StandupRepository
+import repository.StandUpRepository
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
-class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandupRepository)(implicit system: ActorSystem, mat: Materializer)
-  extends AbstractController(cc) {
+class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandUpRepository)(implicit system: ActorSystem, mat: Materializer)
+  extends AbstractController(cc) with Logging {
 
   implicit val transformer: MessageFlowTransformer[String, JsValue] = MessageFlowTransformer.jsonMessageFlowTransformer[String, JsValue]
-  implicit val standupFormats: Format[Standup] = Standup.formats
-  implicit val standupNamesWrites: OWrites[StandupNames] = Json.writes[StandupNames]
+  implicit val standUpFormats: Format[Standup] = Standup.formats
+  implicit val standUpNamesWrites: OWrites[StandupNames] = Json.writes[StandupNames]
 
-  private def isInProgress(standupName: String): Boolean = standupRepo.status(standupName).exists(_.countdown.remaining() >= 0)
-  private def standupNameIsTaken(standupName: String): Boolean = standupRepo.find(standupName).exists(_.name == standupName)
+  private def isInProgress(standUpName: String): Boolean = standupRepo.status(standUpName).exists(_.countdown.remaining() >= 0)
 
-  def getAllStandups: Action[AnyContent] = Action {
-    Ok(Json.toJson(standupRepo.getAll.map(s => StandupNames(s.name, s.displayName))))
+  def getAllStandUps: Action[AnyContent] = Action.async {
+    standupRepo
+      .getAll
+      .map(standUps => Ok(Json.toJson(standUps.map(s => StandupNames(s.name, s.displayName)))))
   }
 
-  def get(standupName: String): Action[AnyContent] = Action.async { request =>
-    standupRepo.find(standupName).fold(
-      Future.successful(NotFound(s"Standup with name: [$standupName] doesn't exist"))
-    ) {
-      s => Future.successful(Ok(Json.toJson(s)))
-    }
+  def get(standUpName: String): Action[AnyContent] = Action.async { request =>
+    standupRepo.find(standUpName).map(_.fold(
+      NotFound(s"Stand up with name: [$standUpName] doesn't exist")
+    )(s => Ok(Json.toJson(s))))
   }
 
-  def start(standupName: String): WebSocket = WebSocket.accept[String, String] { request =>
-    ActorFlow.actorRef[String, JsValue] ( out =>
-      StandupAdminCountdownServiceActor.props(out, standupName, standupRepo)
+  def start(standUpName: String): WebSocket = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef[String, JsValue](out =>
+      StandupAdminCountdownServiceActor.props(out, standUpName, standupRepo)
     ).map(_.toString())
   }
 
-  def pause(standupName: String): Action[AnyContent] = Action(Ok(s"paused $standupName"))
+  def pause(standUpName: String): Action[AnyContent] = Action(Ok(s"paused $standUpName"))
 
-  def status(standupName: String): WebSocket = WebSocket.accept[String, String] { request =>
-    println("Client connected")
-    ActorFlow.actorRef[String, JsValue] ( out =>
-      StandupClientCountdownServiceActor.props(out, standupName, standupRepo)
+  def status(standUpName: String): WebSocket = WebSocket.accept[String, String] { request =>
+    logger.info("Client connected")
+    ActorFlow.actorRef[String, JsValue](out =>
+      StandUpClientCountdownServiceActor.props(out, standUpName, standupRepo)
     ).map(_.toString())
   }
 
-  def isStandupLive(standupName: String): Action[AnyContent] = Action.async { req =>
-    withExistingStandupFromName(standupName) { s =>
-      Future.successful( if (isInProgress(s.name)) Ok else Gone)
+  def isStandUpLive(standUpName: String): Action[AnyContent] = Action.async { req =>
+    withExistingStandUpFromName(standUpName) { s =>
+      Future.successful(if (isInProgress(s.name)) Ok else Gone)
     }
   }
 
   def add: Action[AnyContent] = Action.async { request =>
-    withStandupFromRequest(request) { standup =>
-      if (standupNameIsTaken(standup.name)) Future { Conflict(s"Standup name: ${standup.name} is taken") }
-      else standupRepo.add(standup).map(s => Created(Json.toJson(s)))
+    withStandUpFromRequest(request) { standUp =>
+      for {
+        isTaken  <- standupRepo.find(standUp.name).map(_.exists(_.name == standUp.name))
+        response <- if (isTaken)
+          Future.successful(Conflict(s"Standup name: ${standUp.name} is taken"))
+        else
+          standupRepo.add(standUp).map(s => Created(Json.toJson(s)))
+      } yield response
     }
   }
 
   def edit: Action[AnyContent] = Action.async { request =>
-    withStandupFromRequest(request) { standup =>
-      if (standupRepo.find(standup.name).isDefined)
-        standupRepo.edit(standup).map(s => Ok(Json.toJson(s)))
-      else
-        Future.successful(NotFound(s"Standup with name: [${standup.name}] doesn't exist"))
+    withStandUpFromRequest(request) { standUp =>
+      withExistingStandUpFromName(standUp.name)(s => standupRepo.edit(s).map(s => Ok(Json.toJson(s))))
     }
   }
 
   def remove: Action[AnyContent] = Action.async { request =>
-    withExistingStandupFromRequest(request) { standup =>
+    withExistingStandUpFromRequest(request) { standup =>
       standupRepo.delete(standup).map(s => Ok("Standup deleted"))
     }
   }
 
-  private def withExistingStandupFromName(name: String)(f: Standup => Future[Result]): Future[Result] = {
-    standupRepo.find(name)
-      .fold(
-          Future.successful(NotFound(s"Standup with name: [$name] doesn't exist"))
-      )(
-        f
-      )
+  private def withExistingStandUpFromName(name: String)(f: Standup => Future[Result]): Future[Result] = {
+    standupRepo
+      .find(name)
+      .flatMap(_.fold(Future.successful(NotFound(s"Stand up with name: [$name] doesn't exist")))(f))
   }
 
-  private def withExistingStandupFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
-    withStandupFromRequest(req) { standup =>
-      withExistingStandupFromName(standup.name)(f)
-    }
+  private def withExistingStandUpFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
+    withStandUpFromRequest(req) { s => withExistingStandUpFromName(s.name)(f) }
   }
 
-  private def withStandupFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
+  private def withStandUpFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
     req.body.asJson match {
       case Some(jsVal) =>
         Try(Json.parse(jsVal.toString).as[Standup]) match {
           case Success(s) => f(s)
-          case Failure(s) => Future.successful(UnprocessableEntity("Incorrect format of standup: " + s.getMessage))
+          case Failure(s) => Future.successful(UnprocessableEntity("Incorrect format of standUp: " + s.getMessage))
         }
       case None => Future.successful(BadRequest("Nothing in body / not JSON format"))
     }

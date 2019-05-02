@@ -8,16 +8,16 @@ import javax.inject.{Inject, Singleton}
 import models.{Standup, Team}
 import play.api.Logging
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import repository.StandupRepository
-import repository.postgres.Schema.SlickQuery._
+import repository.StandUpRepository
 import repository.postgres.Schema.SlickAction._
+import repository.postgres.Schema.SlickQuery._
 import repository.postgres.Schema._
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PostgresStandupRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends StandupRepository with HasDatabaseConfigProvider[JdbcProfile] with Logging {
+class PostgresStandUpRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit val ec: ExecutionContext) extends StandUpRepository with HasDatabaseConfigProvider[JdbcProfile] with Logging {
   import profile.api._
 
   val durationToWait = {
@@ -25,10 +25,10 @@ class PostgresStandupRepository @Inject()(protected val dbConfigProvider: Databa
     10.seconds
   }
 
-  override def find(standUpName: String): Option[Standup] =
-    Await.result(db.run {
-      findStandUpByName(standUpName).result.map(buildStandUp)
-    }, durationToWait).headOption
+  override def find(standUpName: String): Future[Option[Standup]] =
+    db.run {
+      findStandUpByName(standUpName).result.map(buildStandUp(_).headOption)
+    }
 
 
   override def add(standup: Standup): Future[Standup] = {
@@ -51,16 +51,15 @@ class PostgresStandupRepository @Inject()(protected val dbConfigProvider: Databa
 
   override def delete(standup: Standup): Future[Boolean] = ???
 
-  override def getAll: List[Standup] = {
-    //TODO need to do better
-    Await.result(db.run {
+  override def getAll: Future[Set[Standup]] = {
+    db.run {
       allStandUps.result.map { results =>
         results.groupBy(_._1)
           .mapValues(_.map(_._2)).map {
           case (standUp, teams) => Standup(standUp.id, standUp.name, standUp.displayName, NonEmptyList.fromListUnsafe(teams.map(t => Team(t.id, t.name, t.speaker, Duration.ofSeconds(t.allocationInSeconds))).toList))
         }
-      }.map(_.toList)
-    }, durationToWait)
+      }.map(_.toSet)
+    }
   }
 
   override def addTeams(standUpName: String, newTeams: Set[Team]) = db.run {
