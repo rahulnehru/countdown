@@ -9,13 +9,13 @@ import play.api.libs.json.{Format, JsValue, Json, OWrites}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket.MessageFlowTransformer
 import play.api.mvc._
-import repository.{JsonFileStandupRepository, StandupRepository}
+import repository.StandupRepository
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
 
-class StandupController @Inject()(cc: ControllerComponents, standupRepo: JsonFileStandupRepository)(implicit system: ActorSystem, mat: Materializer)
+class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandupRepository)(implicit system: ActorSystem, mat: Materializer)
   extends AbstractController(cc) {
 
   implicit val transformer: MessageFlowTransformer[String, JsValue] = MessageFlowTransformer.jsonMessageFlowTransformer[String, JsValue]

@@ -14,7 +14,7 @@ import play.api.libs.json.{JsValue, Json, OFormat}
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.Helpers._
 import play.api.test.{FakeRequest, StubControllerComponentsFactory}
-import repository.JsonFileStandupRepository
+import repository.StandupRepository
 import utils.AsyncHelpers
 
 import scala.concurrent.Future
@@ -43,7 +43,7 @@ class StandupControllerSpec extends WordSpec with Matchers with MockitoSugar wit
   )
 
   trait Setup {
-    val standupRepo: JsonFileStandupRepository = mock[JsonFileStandupRepository]
+    val standupRepo = mock[StandupRepository]
 
     val controller = new StandupController(stubControllerComponents(), standupRepo)
   }

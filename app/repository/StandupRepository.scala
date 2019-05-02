@@ -1,9 +1,12 @@
 package repository
 
-import models.{Standup, StandupContext, TeamUpdate}
+import com.google.inject.ImplementedBy
+import models.{Standup, StandupContext, Team, TeamUpdate}
+import repository.postgres.PostgresStandupRepository
 
 import scala.concurrent.Future
 
+@ImplementedBy(classOf[PostgresStandupRepository])
 trait StandupRepository {
 
   type StandupName = String
@@ -11,6 +14,10 @@ trait StandupRepository {
   def find(standupName: String): Option[Standup]
 
   def add(standup: Standup): Future[Standup]
+
+  def addTeams(standUpName: String, team: Set[Team]): Future[Int]
+
+  def removeTeams(teamNames: Set[String]): Future[Int]
 
   def edit(standup: Standup): Future[Standup]
 
