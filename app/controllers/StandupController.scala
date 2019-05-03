@@ -1,10 +1,10 @@
 package controllers
 
-import actors.{StandupAdminCountdownServiceActor, StandUpClientCountdownServiceActor}
+import actors.{StandUpClientCountdownServiceActor, StandupAdminCountdownServiceActor}
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.Inject
-import models.{Standup, StandupNames}
+import models.{Standup, StandupNames, Team}
 import play.api.Logging
 import play.api.libs.json.{Format, JsValue, Json, OWrites}
 import play.api.libs.streams.ActorFlow
@@ -14,6 +14,7 @@ import repository.StandUpRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandUpRepository)(implicit system: ActorSystem, mat: Materializer)
@@ -70,15 +71,35 @@ class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandUp
     }
   }
 
+  def addTeams(standUpName: String) = Action.async { request =>
+    standupRepo
+      .addTeams(standUpName, request.body.asJson.get.as[Set[Team]])
+      .map(rows => Ok(s"$rows teams added to $standUpName standUp"))
+      .recover{
+        case NonFatal(_) => BadRequest(s"Teams cannot be added to $standUpName")
+      }
+  }
+
+  def removeTeams() = Action.async { request =>
+    val teamsToBeRemoved = request.body.asJson.get.as[Set[String]]
+    logger.info(s"Removing teams $teamsToBeRemoved")
+    standupRepo
+      .removeTeams(teamsToBeRemoved)
+      .map(rows => Ok(s"$rows teams removed"))
+      .recover{
+        case NonFatal(_) => BadRequest(s"Teams cannot be removed to $teamsToBeRemoved")
+      }
+  }
+
   def edit: Action[AnyContent] = Action.async { request =>
     withStandUpFromRequest(request) { standUp =>
-      withExistingStandUpFromName(standUp.name)(s => standupRepo.edit(s).map(s => Ok(Json.toJson(s))))
+      standupRepo.edit(standUp).map(s => Ok(Json.toJson(s)))
     }
   }
 
-  def remove: Action[AnyContent] = Action.async { request =>
-    withExistingStandUpFromRequest(request) { standup =>
-      standupRepo.delete(standup).map(s => Ok("Standup deleted"))
+  def removeStandUp(standUpName: String): Action[AnyContent] = Action.async { _ =>
+    withExistingStandUpFromName(standUpName) { standUp =>
+      standupRepo.delete(standUp).map(_ => Ok(s"StandUp $standUpName deleted"))
     }
   }
 
@@ -86,10 +107,6 @@ class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandUp
     standupRepo
       .find(name)
       .flatMap(_.fold(Future.successful(NotFound(s"Stand up with name: [$name] doesn't exist")))(f))
-  }
-
-  private def withExistingStandUpFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
-    withStandUpFromRequest(req) { s => withExistingStandUpFromName(s.name)(f) }
   }
 
   private def withStandUpFromRequest(req: Request[AnyContent])(f: Standup => Future[Result]): Future[Result] = {
@@ -102,4 +119,6 @@ class StandupController @Inject()(cc: ControllerComponents, standupRepo: StandUp
       case None => Future.successful(BadRequest("Nothing in body / not JSON format"))
     }
   }
+
+
 }

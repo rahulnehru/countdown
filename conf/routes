@@ -6,8 +6,10 @@
 # Standups CRUD
 POST    /standups                       controllers.StandupController.add
 GET     /standups                       controllers.StandupController.getAllStandUps
+PUT     /standups/:name/teams           controllers.StandupController.addTeams(name)
 PUT     /standups                       controllers.StandupController.edit
-DELETE  /standups                       controllers.StandupController.remove
+DELETE  /standups/:name                 controllers.StandupController.removeStandUp(name)
+DELETE  /teams                          controllers.StandupController.removeTeams
 
 GET     /standups/:name                 controllers.StandupController.get(name)
 GET     /standups/:name/status          controllers.StandupController.isStandUpLive(name)

@@ -1,0 +1,67 @@
+{
+  "id": 1,
+  "name":  "main",
+  "displayName": "Access UK Main Standup",
+  "teams": [
+    {
+      "id": 1,
+      "name": "Releases",
+      "speaker": "Steff",
+      "allocationInSeconds": 90
+    },
+    {
+      "id": 2,
+      "name": "Fes",
+      "speaker": "Fred",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 3,
+      "name": "L3",
+      "speaker": "David",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 4,
+      "name": "Out of country",
+      "speaker": "Victor",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 5,
+      "name": "CI",
+      "speaker": "Katie",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 6,
+      "name": "Tech CI",
+      "speaker": "Dominic",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 7,
+      "name": "Standard sections",
+      "speaker": "Iuliana",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 8,
+      "name": "Small projects",
+      "speaker": "Jeremy",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 9,
+      "name": "CWI",
+      "speaker": "Shiv",
+      "allocationInSeconds": 45
+    },
+    {
+      "id": 10,
+      "name": "Actions",
+      "speaker": "Matt",
+      "allocationInSeconds": 45
+    }
+  ]
+}
