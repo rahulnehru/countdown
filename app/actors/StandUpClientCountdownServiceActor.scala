@@ -34,9 +34,8 @@ class StandUpClientCountdownServiceActor(out: ActorRef, standUpName: String, sta
         else
           "disconnect"
       }.pipeTo(self)
-    case t: TeamUpdate =>
-      out ! toJson(t)
-
+    case t: Option[TeamUpdate] =>
+      t.fold(self ! "disconnect")(out ! toJson(_))
   }
 
   override def postStop(): Unit = {
