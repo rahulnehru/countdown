@@ -6,16 +6,21 @@ name := appName
  
 version := "1.0" 
       
-
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
-
 resolvers += "Akka Snapshot Repository" at "http://repo.akka.io/snapshots/"
 
 scalaVersion := "2.12.2"
 
-herokuAppName in Compile := "dd-standups-server"
+herokuAppName in Compile := Map(
+  "prod"  -> "dd-standups-server",
+  "stage" -> "dd-standups-server-stage"
+).getOrElse(sys.props("appEnv"), "dd-standups-server-stage")
+
 herokuIncludePaths in Compile := Seq(
   "standups.json"
+)
+herokuProcessTypes in Compile := Map(
+  "web" -> "target/universal/stage/bin/countdown -Dhttp.port=$PORT -Dconfig.resource=prod.conf"
 )
 
 val dockerTestkitLibs = Seq(
